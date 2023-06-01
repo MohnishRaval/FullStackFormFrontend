@@ -16,7 +16,6 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./form.component.scss'],
 })
 export class FormComponent implements OnInit, OnDestroy {
-  currentSegments: any;
   surveyForm: FormGroup;
   surveyFormChanges: Subscription;
   campusLiking: Array<any> = [
