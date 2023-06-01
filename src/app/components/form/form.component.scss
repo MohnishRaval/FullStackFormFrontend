@@ -36,12 +36,9 @@
       .button-container {
         position: sticky;
         bottom: 0;
-        /* Stick the container to the bottom */
         padding-top: 20px;
-        /* Add some padding to create space between the container and the form fields */
         display: flex;
         justify-content: space-between;
-        /* Align buttons to the sides */
         overflow-y: hidden;
         background-color: dimgray;
 
