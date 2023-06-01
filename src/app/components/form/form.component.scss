@@ -62,7 +62,12 @@
         padding: 5px;
         font-style: italic;
 
-
+        // input.raffle-class.ng-valid {
+        //   background-color: #89f752;
+        // }
+        // input.raffle-class.ng-invalid:not(.ng-untouched) {
+        //   background-color: #eb6565;
+        // }
         &.ng-valid{
           background-color: #89f752;
         }

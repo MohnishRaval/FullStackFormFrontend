@@ -25,7 +25,7 @@
                         <input type="text" formControlName="city" placeholder="City"
                             [ngClass]="{'error':formHandler('city').error,'success':formHandler('city').success,'display-error':formHandler('city').displayError}"><br>
                         <label for="state">5. State</label>
-                        <input type="state" formControlName="state" placeholder="state"
+                        <input type="text" formControlName="state" placeholder="state"
                             [ngClass]="{'error':formHandler('state').error,'success':formHandler('state').success,'display-error':formHandler('state').displayError}"><br>
                         <label for="zipCode">6. ZipCode</label>
                         <input type="number" formControlName="zipCode" placeholder="123456"
@@ -41,15 +41,16 @@
                             [ngClass]="{'error':formHandler('date').error,'success':formHandler('date').success,'display-error':formHandler('date').displayError}"><br>
                         <label class="label-likes" for="likes">10. What did you like most about the campus?</label>
                         <div class="checkbox-list">
-                            <div *ngFor="let d of campusLiking;let i=index" class="checkbox-item">
-                                <label for="checkbox-{{i}}">{{d.name}}</label> <input (change)="checkboxChange($event)"
+                            <div formArrayName="campusLikingArray" *ngFor="let d of campusLiking;let i=index"
+                                class="checkbox-item">
+                                <label for="checkbox-{{i}}">{{d.name}}</label> <input [formControlName]="i"
                                     [value]="d.value" type="checkbox" id="checkbox-{{i}}">
                             </div>
                         </div>
                         <label class="label-likes">11. Likelihood for recommending this school</label>
                         <div class="recommendation-dropdown">
-                            <select name="cars" id="cars">
-                                <option value="defaultoption" selected disabled>Select Option</option>
+                            <select name="likelihood-options" formControlName="likelihood">
+                                <option value="" selected disabled>Select Option</option>
                                 <option value="Very Likely">Very Likely</option>
                                 <option value="Likely">Likely</option>
                                 <option value="Unlikely">Unlikely</option>
@@ -67,7 +68,7 @@
             </div>
             <div class="button-container">
                 <button type="submit">Submit</button>
-                <button type="reset">Reset</button>
+                <button type="reset" (click)="resetForm()">Reset</button>
             </div>
         </div>
 

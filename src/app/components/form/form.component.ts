@@ -17,7 +17,8 @@ import { Subscription } from 'rxjs';
 export class FormComponent implements OnInit, OnDestroy {
   surveyForm: FormGroup;
   surveyFormChanges: Subscription;
-  campusLiking: Array<any> = [
+  mainValid: boolean = false;
+  campusLiking = [
     { name: 'students', value: 'students' },
     { name: 'location', value: 'location' },
     { name: 'campus', value: 'campus' },
@@ -25,6 +26,15 @@ export class FormComponent implements OnInit, OnDestroy {
     { name: 'dormRooms', value: 'dormRooms' },
     { name: 'sports', value: 'sports' },
   ];
+
+  // campusLiking: Array<any> = [
+  //   { name: 'students', value: 'students' },
+  //   { name: 'location', value: 'location' },
+  //   { name: 'campus', value: 'campus' },
+  //   { name: 'atmosphere', value: 'atmosphere' },
+  //   { name: 'dormRooms', value: 'dormRooms' },
+  //   { name: 'sports', value: 'sports' },
+  // ];
 
   constructor(private fb: FormBuilder) {
     this.surveyFormChanges = new Subscription();
@@ -53,12 +63,12 @@ export class FormComponent implements OnInit, OnDestroy {
       date: new FormControl(currentDate.toISOString().split('T')[0], [
         Validators.required,
       ]),
-      campusLikingArray: this.fb.array([]),
-      raffleNumbers: new FormControl('', [
-        Validators.required,
-        this.raffleFieldValidator,
-      ]),
+      campusLikingArray: new FormArray([]),
+      likelihood: new FormControl(''),
+      raffleNumbers: new FormControl('', [this.raffleFieldValidator]),
     });
+
+    this.addCheckboxes();
   }
 
   ngOnInit(): void {
@@ -71,46 +81,57 @@ export class FormComponent implements OnInit, OnDestroy {
     );
   }
 
-  checkboxChange(event: any) {
-    const checkedBox = this.surveyForm.get('campusLikingArray') as FormArray;
-
-    if (event.target.checked) {
-      checkedBox.push(new FormControl(event.target.value));
-    } else {
-      let i: number = 0;
-      checkedBox.controls.forEach((item: any) => {
-        if (item.value == event.target.value) {
-          checkedBox.removeAt(i);
-          return;
-        }
-        i++;
-      });
-    }
+  get campusLikingFormArray() {
+    return this.surveyForm.controls.campusLikingArray as FormArray;
+  }
+  private addCheckboxes() {
+    this.campusLiking.forEach(() =>
+      this.campusLikingFormArray.push(new FormControl(false))
+    );
   }
 
-  raffleFieldValidator(
+  // checkboxChange = (event: any) => {
+  //   const checkedBox = this.surveyForm.get('campusLikingArray') as FormArray;
+  //   const formControl = checkedBox.controls.find(
+  //     (control) => control.value === event.target.value
+  //   );
+
+  //   if (event.target.checked) {
+  //     if (!formControl) {
+  //       checkedBox.push(new FormControl(event.target.value));
+  //     }
+  //   } else {
+  //     if (formControl) {
+  //       const index = checkedBox.controls.indexOf(formControl);
+  //       checkedBox.removeAt(index);
+  //     }
+  //   }
+  // };
+
+  raffleFieldValidator = (
     control: AbstractControl
-  ): { [key: string]: any } | null {
-    const value = control.value;
-    const numbers = value.split(',').map((num: string) => num.trim());
-    const isValid = numbers.every((num: string) => {
-      const parsed = parseInt(num, 10);
-      return !isNaN(parsed) && parsed >= 1 && parsed <= 100;
-    });
+  ): { [key: string]: any } | null => {
+    const value = control.value || false;
+    if (value) {
+      const numbers = value.split(',').map((num: string) => num.trim());
+      const isValid = numbers.every((num: string) => {
+        const parsed = parseInt(num, 10);
+        return !isNaN(parsed) && parsed >= 1 && parsed <= 100;
+      });
+      this.mainValid = isValid;
+    } else {
+      this.mainValid = false;
+    }
+    return this.mainValid ? null : { invalidRaffleNumbers: true };
+  };
 
-    return isValid ? null : { invalidRaffleNumbers: true };
-  }
-
-  errorHandler(formControlName: string) {
-    const getControl = this.surveyForm.get(formControlName)?.errors;
-    return getControl?.invalid && (getControl?.dirty || getControl?.touched);
-  }
-
-  formHandler(formControlName: string): {
+  formHandler = (
+    formControlName: string
+  ): {
     success: boolean;
     error: boolean;
     displayError: boolean;
-  } {
+  } => {
     const currentControl = this.surveyForm.get(formControlName)!;
     const success =
       currentControl?.valid &&
@@ -122,11 +143,23 @@ export class FormComponent implements OnInit, OnDestroy {
 
     const displayError = false;
     return { success, error, displayError };
-  }
+  };
 
-  submitForm(): void {
-    // Handle form submission
-  }
+  resetForm = () => {
+    const checkedBox = this.surveyForm.get('campusLikingArray') as FormArray;
+    checkedBox.controls.forEach((control) => {
+      control.setValue(false);
+      control.markAsUntouched();
+    });
+
+    this.surveyForm.reset();
+  };
+
+  submitForm = (): void => {
+    if (this.surveyForm.valid) {
+    } else {
+    }
+  };
 
   ngOnDestroy(): void {
     this.surveyFormChanges.unsubscribe();
