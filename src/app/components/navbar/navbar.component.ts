@@ -12,6 +12,5 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentRoute = this.dataService.currentActivatedRoute;
-    console.log(this.dataService.currentActivatedRoute);
   }
 }

@@ -63,7 +63,6 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    //console.log(this.surveyForm.valid);
     this.surveyFormChanges = this.surveyForm.valueChanges.subscribe(
       (valueChanges) => {
         setTimeout(() => {
@@ -88,7 +87,6 @@ export class FormComponent implements OnInit, OnDestroy {
         i++;
       });
     }
-    console.log(this.surveyForm.value);
   }
 
   raffleFieldValidator(
@@ -118,11 +116,11 @@ export class FormComponent implements OnInit, OnDestroy {
     const success =
       currentControl?.valid &&
       (currentControl?.dirty || currentControl?.untouched);
-    console.log('success=' + success);
+
     const error =
       currentControl?.invalid &&
       (currentControl?.dirty || currentControl?.untouched);
-    console.log('error=' + error);
+
     const displayError = false;
     return { success, error, displayError };
   }
