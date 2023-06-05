@@ -8,6 +8,8 @@ import { SurveydataComponent } from './components/surveydata/surveydata.componen
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { RxjsPlaygroundComponent } from './components/rxjs-playground/rxjs-playground.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -15,8 +17,15 @@ import { DatePipe } from '@angular/common';
     FormComponent,
     SurveydataComponent,
     NavbarComponent,
+    RxjsPlaygroundComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    FormsModule,
+    HttpClientModule,
+  ],
   providers: [DatePipe],
   bootstrap: [AppComponent],
 })
