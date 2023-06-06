@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, forkJoin, from, of } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
+import { IPost } from '../models/PostModel';
 
 @Injectable({
   providedIn: 'root',
@@ -12,15 +13,7 @@ export class DataService {
   postsURL = 'https://jsonplaceholder.typicode.com/todos';
   usersURL = 'https://jsonplaceholder.typicode.com/users';
   currentActivatedRoute = 'surveyform';
-
-  componentRedirect(source: String, destination: String) {
-    if (source === 'formComponent' && destination === 'surveydataComponent') {
-      this.router.navigate(['/surveydata']);
-    }
-    if (source === 'surveydataComponent' && destination === 'formComponent') {
-      this.router.navigate(['/surveyform']);
-    }
-  }
+  pageSize = 20;
 
   //RXJS-Playground
   getTodos() {
@@ -55,5 +48,18 @@ export class DataService {
         // Process the data here
         console.log(usersWithPosts);
       });
+  }
+
+  //RXJS-Pagination-Challenge
+  getPosts(pageNumber: number, pageSize: number): Observable<IPost[]> {
+    const postsURL = 'https://jsonplaceholder.typicode.com/posts';
+    const startIndex = (pageNumber - 1) * pageSize;
+
+    const params = {
+      _start: startIndex.toString(),
+      _limit: pageSize.toString(),
+    };
+
+    return this.http.get<IPost[]>(postsURL, { params });
   }
 }

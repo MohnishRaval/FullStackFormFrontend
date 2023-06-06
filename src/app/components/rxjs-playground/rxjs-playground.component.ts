@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { from, merge, of, pipe } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { debounceTime, filter, map, skip, take, tap } from 'rxjs/operators';
 import { DataService } from 'src/app/services/data.service';
+import { IPost } from 'src/app/models/PostModel';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-rxjs-playground',
@@ -20,23 +22,29 @@ export class RxjsPlaygroundComponent implements OnInit {
     { name: 'Bob', age: 40 },
     { name: 'Jane', age: 28 },
   ]);
+  names = [{ name: 'mohnish' }, { name: 'gotu' }, { name: 'boss' }];
+  searchField = new FormControl('');
+  currentPage = 1;
+  pageSize = 20;
+  posts: IPost[] = [];
+  debounceFilteredValue: any;
 
   ngOnInit(): void {
     const evenNumbers = this.numbers.pipe(filter((x) => x % 2 === 0));
-    console.log('challenge 1.');
+    console.log('challenge 1. Filter');
     evenNumbers.subscribe((evenNumber) => console.log(evenNumber));
 
-    console.log('challenge 2.');
+    console.log('challenge 2. UpperCase');
     const upperCase = this.strings.pipe(map((x) => x.toUpperCase()));
     upperCase.subscribe((uppercase) => {
       console.log(uppercase);
     });
 
-    console.log('challenge 3.');
+    console.log('challenge 3. Merge');
     const mergeNumbers = merge(this.numbers1, this.numbers2);
     mergeNumbers.subscribe((merged) => console.log(merged));
 
-    console.log('Challenge 4.');
+    console.log('Challenge 4. Map and Filter');
     this.people
       .pipe(
         filter((x) => x.age > 30),
@@ -44,7 +52,35 @@ export class RxjsPlaygroundComponent implements OnInit {
       )
       .subscribe((x) => console.log('name:' + x));
 
-    console.log('Challenge 5.');
+    console.log('Challenge 5. SwitchMap');
     this.dataService.getTodos();
+
+    //Just delaying so Challenge 5 gets completed
+    setTimeout(() => {
+      console.log('Challenge 6. Pagination');
+      this.loadPosts();
+    }, 2000);
+
+    console.log('Challenge 7. DebounceTime');
+    this.searchField.valueChanges.pipe(debounceTime(500)).subscribe((value) => {
+      this.debounceFilteredValue = this.names.filter((x) =>
+        x.name.includes(value)
+      );
+      console.log(value);
+    });
+  }
+
+  loadPosts = () => {
+    this.dataService
+      .getPosts(this.currentPage, this.pageSize)
+      .subscribe((groupPosts) => {
+        groupPosts.map((singlePost) => this.posts.push(singlePost));
+        //console.log(this.posts);
+      });
+  };
+
+  goToPage(desiredPage: number) {
+    this.currentPage = desiredPage;
+    this.loadPosts();
   }
 }
