@@ -1,6 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { from, merge, of, pipe } from 'rxjs';
-import { debounceTime, filter, map, skip, take, tap } from 'rxjs/operators';
+import {
+  catchError,
+  debounceTime,
+  filter,
+  map,
+  skip,
+  take,
+  tap,
+} from 'rxjs/operators';
 import { DataService } from 'src/app/services/data.service';
 import { IPost } from 'src/app/models/PostModel';
 import { FormControl } from '@angular/forms';
@@ -68,6 +76,16 @@ export class RxjsPlaygroundComponent implements OnInit {
       );
       console.log(value);
     });
+
+    console.log('Challenge 8. CatchError');
+    this.dataService.mockErrorFunction().subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.log('Inside Subscribe Error=', error);
+      }
+    );
   }
 
   loadPosts = () => {

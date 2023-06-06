@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, from, of } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, forkJoin, from, of, throwError } from 'rxjs';
+import { catchError, map, retry, switchMap, take } from 'rxjs/operators';
 import { IPost } from '../models/PostModel';
 
 @Injectable({
@@ -12,6 +12,7 @@ export class DataService {
   constructor(public router: Router, private http: HttpClient) {}
   postsURL = 'https://jsonplaceholder.typicode.com/todos';
   usersURL = 'https://jsonplaceholder.typicode.com/users';
+  errorURL = 'https://mock.codes/';
   currentActivatedRoute = 'surveyform';
   pageSize = 20;
 
@@ -60,6 +61,21 @@ export class DataService {
       _limit: pageSize.toString(),
     };
 
-    return this.http.get<IPost[]>(postsURL, { params });
+    return this.http.get<IPost[]>(postsURL, { params }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.log('error occured', error);
+        return throwError(error);
+      })
+    );
+  }
+
+  //RXJS-CatchError
+  mockErrorFunction() {
+    return this.http.get(this.errorURL).pipe(
+      retry(3),
+      catchError((error: HttpErrorResponse) => {
+        return of(error);
+      })
+    );
   }
 }
