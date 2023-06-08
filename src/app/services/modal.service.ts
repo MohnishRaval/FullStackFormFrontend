@@ -14,11 +14,7 @@ export class ModalService {
     header: '',
     body: null as any,
   });
-  public modalContent$ = this.modalSubject as Observable<{
-    display: string;
-    header: string;
-    body: TemplateRef<any>;
-  }>;
+  public modalContent$ = this.modalSubject.asObservable();
 
   constructor() {}
 
