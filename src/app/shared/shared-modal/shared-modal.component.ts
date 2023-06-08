@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ModalService } from 'src/app/services/modal.service';
 
@@ -9,13 +9,22 @@ import { ModalService } from 'src/app/services/modal.service';
 })
 export class SharedModalComponent implements OnInit, OnDestroy {
   display = 'none';
+  header = '';
+  body: TemplateRef<any> | null = null;
   modalSubscription = new Subscription();
+
   constructor(private modalService: ModalService) {}
 
   ngOnInit(): void {
-    this.modalService.modalStatus$.subscribe(
-      (currentStatus: { display: string }) => {
-        this.display = currentStatus.display;
+    this.modalService.modalContent$.subscribe(
+      (content: {
+        display: string;
+        header: string;
+        body: TemplateRef<any>;
+      }) => {
+        this.display = content.display;
+        this.header = content.header;
+        this.body = content.body;
       }
     );
   }

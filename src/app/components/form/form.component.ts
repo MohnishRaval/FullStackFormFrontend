@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import {
   FormGroup,
   FormControl,
@@ -8,6 +14,7 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
   selector: 'app-form',
@@ -15,6 +22,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./form.component.scss'],
 })
 export class FormComponent implements OnInit, OnDestroy {
+  @ViewChild('submitModal') submitModal!: TemplateRef<any>;
   surveyForm: FormGroup;
   surveyFormChanges: Subscription;
   mainValid: boolean = false;
@@ -27,16 +35,7 @@ export class FormComponent implements OnInit, OnDestroy {
     { name: 'sports', value: 'sports' },
   ];
 
-  // campusLiking: Array<any> = [
-  //   { name: 'students', value: 'students' },
-  //   { name: 'location', value: 'location' },
-  //   { name: 'campus', value: 'campus' },
-  //   { name: 'atmosphere', value: 'atmosphere' },
-  //   { name: 'dormRooms', value: 'dormRooms' },
-  //   { name: 'sports', value: 'sports' },
-  // ];
-
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private modalService: ModalService) {
     this.surveyFormChanges = new Subscription();
     const currentDate = new Date();
     this.surveyForm = this.fb.group({
@@ -90,24 +89,6 @@ export class FormComponent implements OnInit, OnDestroy {
     );
   }
 
-  // checkboxChange = (event: any) => {
-  //   const checkedBox = this.surveyForm.get('campusLikingArray') as FormArray;
-  //   const formControl = checkedBox.controls.find(
-  //     (control) => control.value === event.target.value
-  //   );
-
-  //   if (event.target.checked) {
-  //     if (!formControl) {
-  //       checkedBox.push(new FormControl(event.target.value));
-  //     }
-  //   } else {
-  //     if (formControl) {
-  //       const index = checkedBox.controls.indexOf(formControl);
-  //       checkedBox.removeAt(index);
-  //     }
-  //   }
-  // };
-
   raffleFieldValidator = (
     control: AbstractControl
   ): { [key: string]: any } | null => {
@@ -144,6 +125,13 @@ export class FormComponent implements OnInit, OnDestroy {
     const displayError = false;
     return { success, error, displayError };
   };
+
+  callSubmit() {
+    this.modalService.openModal(
+      'Do you want to submit Survey Form?',
+      this.submitModal
+    );
+  }
 
   resetForm = () => {
     const checkedBox = this.surveyForm.get('campusLikingArray') as FormArray;

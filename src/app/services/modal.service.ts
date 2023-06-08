@@ -1,24 +1,36 @@
-import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { Injectable, TemplateRef } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ModalService {
-  private renderer: Renderer2;
-  private modalSubject = new BehaviorSubject<{ display: string }>({
+  private modalSubject = new BehaviorSubject<{
+    display: string;
+    header: string;
+    body: TemplateRef<any>;
+  }>({
     display: 'none',
+    header: '',
+    body: null as any,
   });
-  public modalStatus$ = this.modalSubject as Observable<{ display: string }>;
-  constructor(private rendererFactory2: RendererFactory2) {
-    this.renderer = this.rendererFactory2.createRenderer(null, null);
-  }
+  public modalContent$ = this.modalSubject as Observable<{
+    display: string;
+    header: string;
+    body: TemplateRef<any>;
+  }>;
 
-  openModal() {
-    return this.modalSubject.next({ display: 'block' });
+  constructor() {}
+
+  openModal(header: string, body: TemplateRef<any>) {
+    return this.modalSubject.next({ display: 'block', header, body });
   }
 
   closeModal() {
-    return this.modalSubject.next({ display: 'none' });
+    return this.modalSubject.next({
+      display: 'none',
+      header: '',
+      body: null as any,
+    });
   }
 }

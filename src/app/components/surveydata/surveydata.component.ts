@@ -1,11 +1,4 @@
-import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ModalService } from 'src/app/services/modal.service';
 @Component({
   selector: 'app-surveydata',
@@ -13,11 +6,12 @@ import { ModalService } from 'src/app/services/modal.service';
   styleUrls: ['./surveydata.component.scss'],
 })
 export class SurveydataComponent implements OnInit {
+  @ViewChild('dynamicContent') dynamicContent!: TemplateRef<any>;
   constructor(private modalService: ModalService) {}
 
   ngOnInit(): void {}
 
   openModal() {
-    this.modalService.openModal();
+    this.modalService.openModal('SurveyData', this.dynamicContent);
   }
 }

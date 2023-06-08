@@ -1,7 +1,12 @@
 <!-- <div class="surveydata-main-container">
     <button id="button-id" (click)="openModal()">click</button>
 </div> -->
+
+<ng-template #dynamicContent>
+    <p>i am good</p>
+</ng-template>
+
+
 <div class="surveydata-main-container">
-    <button id="button-id" data-bs-toggle="modal" data-bs-target="#exampleModalCenter"
-        (click)="openModal()">click</button>
+    <button data-bs-toggle="modal" data-bs-target="#exampleModalCenter" (click)="openModal()">click</button>
 </div>

@@ -67,7 +67,8 @@
 
             </div>
             <div class="button-container">
-                <button type="submit">Submit</button>
+                <button type="submit" data-bs-toggle="modal" data-bs-target="#exampleModalCenter"
+                    (click)="callSubmit()">Submit</button>
                 <button type="reset" (click)="resetForm()">Reset</button>
             </div>
         </div>
@@ -76,5 +77,8 @@
 
     </body>
 </div>
+
+
+<ng-template #submitModal></ng-template>
 
 </html>
