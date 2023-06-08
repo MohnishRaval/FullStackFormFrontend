@@ -1,12 +1,10 @@
-<!-- <div class="surveydata-main-container">
-    <button id="button-id" (click)="openModal()">click</button>
-</div> -->
-
-<ng-template #dynamicContent>
+<!-- <ng-template #dynamicContent>
     <p>i am good</p>
-</ng-template>
+</ng-template> -->
 
 
 <div class="surveydata-main-container">
-    <button data-bs-toggle="modal" data-bs-target="#exampleModalCenter" (click)="openModal()">click</button>
+    <ag-grid-angular style="width: 500px; height: 350px;" class="ag-theme-alpine" [rowData]="rowData"
+        [columnDefs]="columnDefs">
+    </ag-grid-angular>
 </div>
