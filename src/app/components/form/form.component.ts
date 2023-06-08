@@ -14,6 +14,8 @@ import {
   AbstractControl,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { CustomspinnerService } from 'src/app/services/customspinner.service';
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
@@ -35,7 +37,11 @@ export class FormComponent implements OnInit, OnDestroy {
     { name: 'sports', value: 'sports' },
   ];
 
-  constructor(private fb: FormBuilder, private modalService: ModalService) {
+  constructor(
+    private fb: FormBuilder,
+    private modalService: ModalService,
+    private spinner: CustomspinnerService
+  ) {
     this.surveyFormChanges = new Subscription();
     const currentDate = new Date();
     this.surveyForm = this.fb.group({
@@ -71,13 +77,13 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.surveyFormChanges = this.surveyForm.valueChanges.subscribe(
-      (valueChanges) => {
+    this.surveyFormChanges = this.surveyForm.valueChanges
+      .pipe(debounceTime(1000))
+      .subscribe((valueChanges) => {
         setTimeout(() => {
           console.log(valueChanges);
         }, 1000);
-      }
-    );
+      });
   }
 
   get campusLikingFormArray() {
@@ -134,12 +140,13 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   resetForm = () => {
+    this.spinner.show('Resetting From Data', 2000);
     const checkedBox = this.surveyForm.get('campusLikingArray') as FormArray;
     checkedBox.controls.forEach((control) => {
       control.setValue(false);
       control.markAsUntouched();
     });
-
+    this.spinner.hide();
     this.surveyForm.reset();
   };
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from './services/data.service';
 import { Router } from '@angular/router';
+import { CustomspinnerService } from './services/customspinner.service';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,9 +9,15 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(public router: Router) {
+  public spinnerText$!: Observable<string>;
+  constructor(
+    public router: Router,
+    private customSpinner: CustomspinnerService
+  ) {
     this.router.navigateByUrl('/surveyform');
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.spinnerText$ = this.customSpinner.spinnerData$;
+  }
 }

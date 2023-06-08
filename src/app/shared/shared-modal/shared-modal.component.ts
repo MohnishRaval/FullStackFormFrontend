@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { Subscription } from 'rxjs';
 import { ModalService } from 'src/app/services/modal.service';
 
@@ -13,9 +14,13 @@ export class SharedModalComponent implements OnInit, OnDestroy {
   body: TemplateRef<any> | null = null;
   modalSubscription = new Subscription();
 
-  constructor(private modalService: ModalService) {}
+  constructor(
+    private modalService: ModalService,
+    private spinner: NgxSpinnerService
+  ) {}
 
   ngOnInit(): void {
+    //this.spinner.show();
     this.modalService.modalContent$.subscribe(
       (content: {
         display: string;
