@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { CustomspinnerService } from 'src/app/services/customspinner.service';
 import { ModalService } from 'src/app/services/modal.service';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-form',
@@ -40,7 +41,8 @@ export class FormComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private modalService: ModalService,
-    private spinner: CustomspinnerService
+    private spinner: CustomspinnerService,
+    private notificationService: NotificationService
   ) {
     this.surveyFormChanges = new Subscription();
     const currentDate = new Date();
@@ -132,13 +134,6 @@ export class FormComponent implements OnInit, OnDestroy {
     return { success, error, displayError };
   };
 
-  callSubmit() {
-    this.modalService.openModal(
-      'Do you want to submit Survey Form?',
-      this.submitModal
-    );
-  }
-
   resetForm = () => {
     this.spinner.show('Resetting From Data', 2000);
     const checkedBox = this.surveyForm.get('campusLikingArray') as FormArray;
@@ -152,8 +147,14 @@ export class FormComponent implements OnInit, OnDestroy {
 
   submitForm = (): void => {
     if (this.surveyForm.valid) {
+      this.notificationService.addNotification('Form Submitted');
     } else {
+      this.notificationService.addNotification('Form Error');
     }
+    this.modalService.openModal(
+      'Do you want to submit Survey Form?',
+      this.submitModal
+    );
   };
 
   ngOnDestroy(): void {
