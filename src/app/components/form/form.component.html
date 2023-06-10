@@ -67,9 +67,9 @@
 
             </div>
             <div class="button-container">
-                <button type="submit" data-bs-toggle="modal" data-bs-target="#exampleModalCenter"
-                    (click)="callSubmit()">Submit</button>
-                <button type="reset" (click)="resetForm()">Reset</button>
+                <button type="button" class="btn btn-primary btn-lg" (click)="callSubmit()" data-bs-toggle="modal"
+                    data-bs-target="#exampleModalCenter">Submit</button>
+                <button type="button" (click)="resetForm()" class="btn btn-danger btn-lg">Reset</button>
             </div>
         </div>
 

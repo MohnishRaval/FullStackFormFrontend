@@ -36,17 +36,21 @@
       .button-container {
         position: sticky;
         bottom: 0;
-        padding-top: 20px;
+        padding-top: 5px;
         display: flex;
         justify-content: space-between;
         overflow-y: hidden;
+        padding-left: 10%;
+        padding-right: 10%;
         background-color: dimgray;
+        border-radius: 12px;
+        margin-left: 3%;
+        margin-right: 3%;
 
         button {
-          width: 50%;
+          width: 40%;
         }
       }
-
     }
 
     .form-fields {
