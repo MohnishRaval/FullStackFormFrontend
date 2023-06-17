@@ -13,11 +13,14 @@ import {
   FormArray,
   AbstractControl,
 } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { CustomspinnerService } from 'src/app/services/customspinner.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { NotificationService } from 'src/app/services/notification.service';
+import { FormPostModel } from '../../models/PostModel';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-form',
@@ -42,7 +45,9 @@ export class FormComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private modalService: ModalService,
     private spinner: CustomspinnerService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private toastr: ToastrService,
+    private dataService: DataService
   ) {
     this.surveyFormChanges = new Subscription();
     const currentDate = new Date();
@@ -61,7 +66,10 @@ export class FormComponent implements OnInit, OnDestroy {
         Validators.pattern('[a-zA-Z ]+'),
       ]),
       state: new FormControl('', [Validators.required]),
-      zipCode: new FormControl('', [Validators.required]),
+      zipCode: new FormControl('', [
+        Validators.required,
+        Validators.pattern('[0-9]{5}'),
+      ]),
       phone: new FormControl('', [
         Validators.required,
         Validators.pattern('[0-9]{3}-[0-9]{3}-[0-9]{4}'),
@@ -82,10 +90,15 @@ export class FormComponent implements OnInit, OnDestroy {
     this.surveyFormChanges = this.surveyForm.valueChanges
       .pipe(debounceTime(1000))
       .subscribe((valueChanges) => {
-        setTimeout(() => {
-          console.log(valueChanges);
-        }, 1000);
+        console.log(valueChanges);
+        // setTimeout(() => {
+        //   console.log(valueChanges);
+        // }, 1000);
       });
+
+    // this.toastr.success('Success', 'Form Submiited', {
+    //   progressBar: true,
+    // });
   }
 
   get campusLikingFormArray() {
@@ -146,7 +159,34 @@ export class FormComponent implements OnInit, OnDestroy {
   };
 
   submitForm = (): void => {
+    const selectedCheckBoxes = this.surveyForm.value.campusLikingArray
+      .map((checked: any, index: any) =>
+        checked ? this.campusLiking[index].value : null
+      )
+      .filter((value: any) => value != null);
+
+    const formModelPartial: Partial<FormPostModel> = {
+      firstName: this.surveyForm.value.firstName,
+      lastName: this.surveyForm.value.lastName,
+      streetAddress: this.surveyForm.value.address,
+      city: this.surveyForm.value.city,
+      state: this.surveyForm.value.state,
+      zipCode: this.surveyForm.value.zipCode,
+      phoneNumber: this.surveyForm.value.phone,
+      email: this.surveyForm.value.email,
+      date: this.surveyForm.value.date,
+      campusLikingArray: selectedCheckBoxes,
+      recommendation: this.surveyForm.value.likelihood,
+      raffleNumbers: this.surveyForm.value.raffleNumbers,
+      won: false,
+      optionStudent: true,
+    };
+    const formModel = new FormPostModel(formModelPartial);
+    console.log('formModel=', formModel);
     if (this.surveyForm.valid) {
+      this.dataService.saveFormDetails(formModel).subscribe((formResponse) => {
+        console.log(formResponse);
+      });
       this.notificationService.addNotification('Form Submitted');
     } else {
       this.notificationService.addNotification('Form Error');

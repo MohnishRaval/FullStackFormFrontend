@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, forkJoin, from, of, throwError } from 'rxjs';
 import { catchError, map, retry, switchMap, take } from 'rxjs/operators';
-import { IPost } from '../models/PostModel';
+import { IPost, FormPostModel } from '../models/PostModel';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +15,27 @@ export class DataService {
   errorURL = 'https://mock.codes/';
   currentActivatedRoute = 'surveyform';
   pageSize = 20;
+
+  //FORM Methods
+  saveFormDetails(formModel: FormPostModel) {
+    return this.http
+      .post<FormPostModel>('http://localhost:8080/form/submit', formModel)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          let errorMessage = 'Some Error Occurred';
+          if (error.status === 400) {
+            errorMessage = 'Invalid Form Data';
+          } else if (error.status === 500) {
+            errorMessage = 'Server Error Occurred';
+          }
+          return throwError(errorMessage);
+        })
+      );
+  }
+
+  fetchFormDetails() {
+    return this.http.get('http://localhost:8080/form/viewAllRecords');
+  }
 
   //RXJS-Playground
   getTodos() {
