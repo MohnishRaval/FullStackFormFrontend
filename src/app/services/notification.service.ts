@@ -10,12 +10,9 @@ export class NotificationService {
   public showNotificationData$ = this.notificationData.asObservable();
   constructor() {}
 
+  //Bell Icon Notification
   addNotification(notificationText: string) {
     this.notifcationsArray.push(notificationText);
     return this.notificationData.next(this.notifcationsArray);
   }
-
-  // showNotifications() {
-  //   return this.showNotificationData$;
-  // }
 }

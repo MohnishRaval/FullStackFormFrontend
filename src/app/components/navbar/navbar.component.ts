@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class NavbarComponent implements OnInit {
   currentRoute = '';
+  notificationCount: number = 0;
   receivedNotifications$: Observable<any> | undefined;
   constructor(
     private dataService: DataService,
@@ -20,5 +21,8 @@ export class NavbarComponent implements OnInit {
     this.currentRoute = this.dataService.currentActivatedRoute;
     this.receivedNotifications$ =
       this.notificationService.showNotificationData$;
+    this.receivedNotifications$.subscribe((notifcations) => {
+      this.notificationCount = notifcations.length;
+    });
   }
 }

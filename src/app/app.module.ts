@@ -16,6 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { SharedModalComponent } from './shared/shared-modal/shared-modal.component';
 import { AgGridModule } from 'ag-grid-angular';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     AgGridModule,
     NgxSpinnerModule,
     NoopAnimationsModule,
+    ToastrModule.forRoot(),
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent],
