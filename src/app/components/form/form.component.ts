@@ -28,9 +28,9 @@ import { DataService } from '../../services/data.service';
   styleUrls: ['./form.component.scss'],
 })
 export class FormComponent implements OnInit, OnDestroy {
-  @ViewChild('submitModal') submitModal!: TemplateRef<any>;
+  @ViewChild('formModal') formModal!: TemplateRef<any>;
   surveyForm: FormGroup;
-  surveyFormChanges: Subscription;
+  formSubscriptions: Subscription[] = [];
   mainValid: boolean = false;
   campusLiking = [
     { name: 'students', value: 'students' },
@@ -44,12 +44,11 @@ export class FormComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private modalService: ModalService,
-    private spinner: CustomspinnerService,
+    private spinnerService: CustomspinnerService,
     private notificationService: NotificationService,
     private toastr: ToastrService,
     private dataService: DataService
   ) {
-    this.surveyFormChanges = new Subscription();
     const currentDate = new Date();
     this.surveyForm = this.fb.group({
       firstName: new FormControl('', [
@@ -87,18 +86,14 @@ export class FormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.surveyFormChanges = this.surveyForm.valueChanges
+    this.spinnerService.show('Loading Form... Please Wait', 2000);
+    const surveyFormChanges = this.surveyForm.valueChanges
       .pipe(debounceTime(1000))
       .subscribe((valueChanges) => {
-        console.log(valueChanges);
-        // setTimeout(() => {
-        //   console.log(valueChanges);
-        // }, 1000);
+        // console.log(valueChanges);
       });
-
-    // this.toastr.success('Success', 'Form Submiited', {
-    //   progressBar: true,
-    // });
+    this.formSubscriptions.push(surveyFormChanges);
+    this.spinnerService.hide();
   }
 
   get campusLikingFormArray() {
@@ -148,13 +143,13 @@ export class FormComponent implements OnInit, OnDestroy {
   };
 
   resetForm = () => {
-    this.spinner.show('Resetting From Data', 2000);
+    this.spinnerService.show('Resetting From Data', 2000);
     const checkedBox = this.surveyForm.get('campusLikingArray') as FormArray;
     checkedBox.controls.forEach((control) => {
       control.setValue(false);
       control.markAsUntouched();
     });
-    this.spinner.hide();
+    this.spinnerService.hide();
     this.surveyForm.reset();
   };
 
@@ -182,22 +177,20 @@ export class FormComponent implements OnInit, OnDestroy {
       optionStudent: true,
     };
     const formModel = new FormPostModel(formModelPartial);
-    console.log('formModel=', formModel);
     if (this.surveyForm.valid) {
-      this.dataService.saveFormDetails(formModel).subscribe((formResponse) => {
-        console.log(formResponse);
-      });
+      this.modalService.openModal(
+        'Do you want to submit Survey Form?',
+        this.formModal
+      );
+      this.dataService.setFormPayload(formModel);
       this.notificationService.addNotification('Form Submitted');
+      this.surveyForm.reset();
     } else {
       this.notificationService.addNotification('Form Error');
     }
-    this.modalService.openModal(
-      'Do you want to submit Survey Form?',
-      this.submitModal
-    );
   };
 
   ngOnDestroy(): void {
-    this.surveyFormChanges.unsubscribe();
+    this.formSubscriptions.forEach((itemSub) => itemSub.unsubscribe());
   }
 }
