@@ -1,6 +1,9 @@
 import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subscription } from 'rxjs';
+import { FormPostModel } from 'src/app/models/PostModel';
+import { CustomspinnerService } from 'src/app/services/customspinner.service';
+import { DataService } from 'src/app/services/data.service';
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
@@ -12,35 +15,55 @@ export class SharedModalComponent implements OnInit, OnDestroy {
   display = 'none';
   header = '';
   body: TemplateRef<any> | null = null;
-  modalSubscription = new Subscription();
+  displayBody: boolean = false;
+  modalSubscriptions: Subscription[] = [];
+  private formPayload!: FormPostModel;
 
   constructor(
     private modalService: ModalService,
-    private spinner: NgxSpinnerService
+    private dataService: DataService,
+    private spinnerService: CustomspinnerService
   ) {}
 
   ngOnInit(): void {
-    //this.spinner.show();
-    this.modalService.modalContent$.subscribe(
+    const modalContenSub = this.modalService.modalContent$.subscribe(
       (content: {
         display: string;
         header: string;
+        displayBody?: boolean;
         body: TemplateRef<any>;
       }) => {
         this.display = content.display;
         this.header = content.header;
         this.body = content.body;
+        this.displayBody = content?.displayBody ?? false;
       }
     );
+    this.modalSubscriptions.push(modalContenSub);
+    const getFormPayload = this.dataService.formPayload$.subscribe(
+      (getFormData: FormPostModel) => {
+        this.formPayload = getFormData;
+      }
+    );
+    console.log(this.formPayload);
+    this.modalSubscriptions.push(getFormPayload);
   }
 
   closeModal() {
     this.modalService.closeModal();
   }
 
+  submitModal() {
+    this.spinnerService.show('Form Submitting...');
+    const submitFormSub = this.dataService
+      .saveFormDetails(this.formPayload)
+      .subscribe((response) => {
+        this.spinnerService.hide();
+      });
+    this.modalSubscriptions.push(submitFormSub);
+  }
+
   ngOnDestroy(): void {
-    if (this.modalSubscription) {
-      this.modalSubscription.unsubscribe();
-    }
+    this.modalSubscriptions.forEach((itemSub) => itemSub.unsubscribe());
   }
 }
