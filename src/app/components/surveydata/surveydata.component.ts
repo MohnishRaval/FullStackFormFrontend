@@ -6,12 +6,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ModalService } from 'src/app/services/modal.service';
+import { Toast, ToastrService } from 'ngx-toastr';
 import { ColDef, GridApi, GridReadyEvent } from 'ag-grid-community';
 import { DataService } from 'src/app/services/data.service';
 import { Subscription } from 'rxjs';
 import { FormPostModel } from 'src/app/models/PostModel';
 import { map } from 'rxjs/operators';
 import { CustomspinnerService } from 'src/app/services/customspinner.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
 @Component({
   selector: 'app-surveydata',
   templateUrl: './surveydata.component.html',
@@ -42,7 +44,9 @@ export class SurveydataComponent implements OnInit, OnDestroy {
   constructor(
     private modalService: ModalService,
     private dataService: DataService,
-    private spinnerService: CustomspinnerService
+    private toastrService: ToastrService,
+    private spinnerService: CustomspinnerService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -69,12 +73,15 @@ export class SurveydataComponent implements OnInit, OnDestroy {
       .subscribe(
         (updatedData: Partial<FormPostModel>[]) => {
           this.spinnerService.hide();
+          setTimeout(() => {
+            this.toastrService.success('Survey Records Fetched Successfully');
+          }, 2000);
           this.rowData = updatedData;
           console.log(this.rowData);
         },
         (error) => {
           this.spinnerService.hide();
-          console.log('Error occurred in displayingForm Data');
+          this.toastrService.error('Failed to Fetch Survey Form Details');
         }
       );
     this.surveyDataSubscriptions.push(displayFormDataSub);

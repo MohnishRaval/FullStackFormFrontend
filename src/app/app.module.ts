@@ -36,7 +36,11 @@ import { ToastrModule } from 'ngx-toastr';
     AgGridModule,
     NgxSpinnerModule,
     NoopAnimationsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      progressBar: true,
+      positionClass: 'toast-top-right',
+      progressAnimation: 'increasing',
+    }),
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent],

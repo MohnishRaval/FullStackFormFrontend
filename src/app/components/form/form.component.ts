@@ -46,7 +46,7 @@ export class FormComponent implements OnInit, OnDestroy {
     private modalService: ModalService,
     private spinnerService: CustomspinnerService,
     private notificationService: NotificationService,
-    private toastr: ToastrService,
+    private toastrService: ToastrService,
     private dataService: DataService
   ) {
     const currentDate = new Date();
@@ -151,6 +151,9 @@ export class FormComponent implements OnInit, OnDestroy {
     });
     this.spinnerService.hide();
     this.surveyForm.reset();
+    setTimeout(() => {
+      this.toastrService.success('Form Rested Successfully');
+    }, 2000);
   };
 
   submitForm = (): void => {
